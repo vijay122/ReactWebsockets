@@ -15,7 +15,8 @@ const websocketsReducer = (state = initialState,action) => {
             console.log(nextState);
             break;
         case WebsocketActionType.DISCONNECT_WEBSOCKET:
-            nextState = {...state,connected:true,toDisconnect:true}
+            nextState = {...state,connected:true,toDisconnect:true};
+            break;
         default:
             return state;
     }

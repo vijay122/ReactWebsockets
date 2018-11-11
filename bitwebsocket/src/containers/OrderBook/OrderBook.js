@@ -95,7 +95,10 @@ export class OrderBook extends React.Component {
         this.props.dispatch(ActionCreators.disconnectWebsocket());
         let arrayCopy = [...this.state.data];
         arrayCopy.sort(this.compareBy(key));
-        this.setState({data: arrayCopy});
+        this.setState({},function(){
+            this.setState({data: arrayCopy});
+        });
+
     }
 
     render() {

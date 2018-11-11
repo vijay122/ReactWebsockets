@@ -43,7 +43,7 @@ export class WebSocket extends React.Component {
                     }
                     if(response[0]=== this.bookChannelId)
                     {
-                    //    this.props.dispatch(ActionCreators.setBookData(response));
+                        this.props.dispatch(ActionCreators.setBookData(response));
                     }
                 }
             }
@@ -72,6 +72,14 @@ export class WebSocket extends React.Component {
           this.ws.send(this.tradeMessage);
           this.ws.send(this.bookMessage);
     }
+    componentDidUpdate()
+    {
+        debugger;
+        if(this.state.toDisconnect==true)
+        {
+            this.ws.close();
+        }
+    }
 
     render() {
         const contextValue = {
@@ -93,10 +101,11 @@ export class WebSocket extends React.Component {
     }
     static getDerivedStateFromProps(newProps, prevState) { // - GDSFS
         debugger;
-
-        if(newProps && newProps.book && newProps.book.currentItems && newProps.book.currentItems[0] &&  newProps.book.currentItems[0].price != prevState.data[0].price)
+        if(newProps && newProps.websockets && newProps.websockets.toDisconnect===true)
         {
-            return {data:newProps.book.currentItems};
+            return {
+                ...newProps.websockets
+            }
         }
         return null;
     }
