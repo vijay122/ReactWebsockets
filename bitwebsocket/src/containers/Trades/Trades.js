@@ -2,12 +2,14 @@ import { Tab, Tabs, TabList, TabPanel } from 'react-tabs';
 import React from "react";
 import "react-tabs/style/react-tabs.css";
 import TradeTabs from './TradeTabs';
+import {WebSocket} from "../../components/Websocket/Websocket";
+import {connect} from "react-redux";
 
 
 /*
   Table component written as an ES6 class
 */
-export default class Trades extends React.Component {
+export class Trades extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
@@ -20,9 +22,23 @@ export default class Trades extends React.Component {
 
     }
     render(){
+        let st = this.state;
        return <TradeTabs/>
     }
 }
+
+function mapStateToProps(state) {
+    return {
+        trades: state.tradesReducer,
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {  dispatch };
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(Trades);
 
 
 

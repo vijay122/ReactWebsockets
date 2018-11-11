@@ -39,15 +39,11 @@ export class WebSocket extends React.Component {
                 {
                     if(response[0]===this.tradesChannelId)
                     {
-                        debugger;
-                       // this.setState({tradesData:response});
-
                         this.props.dispatch(ActionCreators.setTradeData(response));
                     }
                     if(response[0]=== this.bookChannelId)
                     {
-                        this.props.dispatch(ActionCreators.setBookData(response));
-                      //  this.setState({bookData:response});
+                    //    this.props.dispatch(ActionCreators.setBookData(response));
                     }
                 }
             }
@@ -94,6 +90,15 @@ export class WebSocket extends React.Component {
             {this.props.children}
         </Provider>
         */
+    }
+    static getDerivedStateFromProps(newProps, prevState) { // - GDSFS
+        debugger;
+
+        if(newProps && newProps.book && newProps.book.currentItems && newProps.book.currentItems[0] &&  newProps.book.currentItems[0].price != prevState.data[0].price)
+        {
+            return {data:newProps.book.currentItems};
+        }
+        return null;
     }
 }
 

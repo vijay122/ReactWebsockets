@@ -1,12 +1,16 @@
 import React, { Component } from 'react';
 import "./OrderBook.scss";
+import {Trades} from "../Trades/Trades";
+import {connect} from "react-redux";
+import _ from "lodash";
+import ActionCreators from "../../redux/actions";
 
 const OrderBookContext = React.createContext();
 
 const Row = ({count, amount, total, price, price1,total1,amount1,count1}) => (
     <div className="row">
         <div>{count}</div>
-        <div>{amount}</div>
+        <div className="extraWidth">{amount}</div>
         <div>{total}</div>
         <div>{price}</div>
         <div>{price1}</div>
@@ -19,11 +23,38 @@ const Row = ({count, amount, total, price, price1,total1,amount1,count1}) => (
 /*
   Table component written as an ES6 class
 */
-export default class OrderBook extends React.Component {
+export class OrderBook extends React.Component {
     constructor(props) {
         super(props);
         this.state = {
             data: [
+                {count : 43, amount: 1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 303, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 703, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 453, amount:  1.1222, total: 'High', price:  1.1222, price1: 140, total1:233, amount1:1, count1:1},
+                {count : 73, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 4037, amount:  1.1222, total: 'High', price:  1.1222, price1: 110, total1:233, amount1:1, count1:1},
+                {count : 1033, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 463, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 4037, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 43, amount: 1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 303, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 703, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 453, amount:  1.1222, total: 'High', price:  1.1222, price1: 140, total1:233, amount1:1, count1:1},
+                {count : 73, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 4037, amount:  1.1222, total: 'High', price:  1.1222, price1: 110, total1:233, amount1:1, count1:1},
+                {count : 1033, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 463, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 4037, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 43, amount: 1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 303, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 703, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 453, amount:  1.1222, total: 'High', price:  1.1222, price1: 140, total1:233, amount1:1, count1:1},
+                {count : 73, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 4037, amount:  1.1222, total: 'High', price:  1.1222, price1: 110, total1:233, amount1:1, count1:1},
+                {count : 1033, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 463, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 4037, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
                 {count : 43, amount: 1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
                 {count : 303, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
                 {count : 703, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
@@ -42,6 +73,16 @@ export default class OrderBook extends React.Component {
         this.sortBy.bind(this);
     }
 
+    static getDerivedStateFromProps(newProps, prevState) { // - GDSFS
+
+        if(newProps && newProps.book && newProps.book.currentItems && newProps.book.currentItems[0] &&  newProps.book.currentItems[0].price != prevState.data[0].price)
+        {
+            return {data:newProps.book.currentItems};
+        }
+        return null;
+    }
+
+
     compareBy(key) {
         return function (a, b) {
             if (a[key] < b[key]) return -1;
@@ -51,6 +92,7 @@ export default class OrderBook extends React.Component {
     }
 
     sortBy(key) {
+        this.props.dispatch(ActionCreators.disconnectWebsocket());
         let arrayCopy = [...this.state.data];
         arrayCopy.sort(this.compareBy(key));
         this.setState({data: arrayCopy});
@@ -63,7 +105,7 @@ export default class OrderBook extends React.Component {
             <div className="table">
                 <div className="header">
                     <div onClick={() => this.sortBy('count')} >count</div>
-                    <div onClick={() => this.sortBy('amount')}>Amount</div>
+                    <div className="extraWidth" onClick={() => this.sortBy('amount')}>Amount</div>
                     <div onClick={() => this.sortBy('total')}>Total</div>
                     <div onClick={() => this.sortBy('price')}>Price</div>
                     <div onClick={() => this.sortBy('price1')}>Price</div>
@@ -79,3 +121,16 @@ export default class OrderBook extends React.Component {
 
     }
 }
+
+function mapStateToProps(state) {
+    return {
+        book: state.orderBookReducer,
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {  dispatch };
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(OrderBook);

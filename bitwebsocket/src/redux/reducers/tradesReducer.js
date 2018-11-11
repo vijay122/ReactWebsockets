@@ -6,8 +6,9 @@ const tradesReducer = (state = initialState,action) => {
     let nextState = state;
     switch (action.type) {
         case TradeActionType.SET_TRADES:
-            const { result } = action.payload;
-            nextState = result;
+            const { data } = action.payload;
+
+            nextState = data;
             console.log(nextState);
             break;
         default:
@@ -15,4 +16,5 @@ const tradesReducer = (state = initialState,action) => {
     }
     return nextState || state;
 };
+
 export default tradesReducer;
