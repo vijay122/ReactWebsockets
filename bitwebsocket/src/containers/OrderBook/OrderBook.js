@@ -75,7 +75,7 @@ export class OrderBook extends React.Component {
 
     static getDerivedStateFromProps(newProps, prevState) { // - GDSFS
 
-        if(newProps && newProps.book && newProps.book.currentItems && newProps.book.currentItems[0] &&  newProps.book.currentItems[0].price != prevState.data[0].price)
+        if(newProps && newProps.book && prevState &&  prevState.data && prevState.data[0] && newProps.book.currentItems && newProps.book.currentItems[0] &&  newProps.book.currentItems[0].price != prevState.data[0].price)
         {
             return {data:newProps.book.currentItems};
         }
@@ -95,7 +95,7 @@ export class OrderBook extends React.Component {
         this.props.dispatch(ActionCreators.disconnectWebsocket());
         let arrayCopy = [...this.state.data];
         arrayCopy.sort(this.compareBy(key));
-        this.setState({},function(){
+        this.setState({data:[]},function(){
             this.setState({data: arrayCopy});
         });
 
