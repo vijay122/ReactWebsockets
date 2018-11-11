@@ -1,6 +1,8 @@
 import React, { Component } from 'react';
 import "./OrderBook.scss";
 
+const OrderBookContext = React.createContext();
+
 const Row = ({count, amount, total, price, price1,total1,amount1,count1}) => (
     <div className="row">
         <div>{count}</div>
@@ -31,9 +33,6 @@ export default class OrderBook extends React.Component {
                 {count : 1033, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
                 {count : 463, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
                 {count : 4037, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
-
-
-
             ],
         };
 

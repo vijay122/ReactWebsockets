@@ -1,6 +1,6 @@
 import React from "react";
 import "./TradeTabs.scss";
-
+const Context = React.createContext();
 
  class Tabs extends React.Component {
     displayName= 'Tabs';

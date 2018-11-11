@@ -2,8 +2,8 @@
 import Websocket from "../../components/Websocket/Websocket";
 
 import React, { Component } from 'react';
-import OrderBook from "../../components/OrderBook/OrderBook";
-import Trades from "../../components/Trades/Trades";
+import OrderBook from "../OrderBook/OrderBook";
+import Trades from "../Trades/Trades";
 //import logo from './logo.svg';
 import './Dashboard.scss';
 import { Container, Row, Col } from 'react-grid-system';

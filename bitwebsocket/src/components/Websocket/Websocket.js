@@ -1,28 +1,55 @@
 import React, { Component } from 'react';
 import Sockette from 'sockette';
 const WEB_SOCKET_ENDPOINT ="wss://api.bitfinex.com/ws/2";
+const { Provider, Consumer } = React.createContext();
+import ActionCreators from "../../redux/actions";
+import { connect } from "react-redux";
 
-
-export default class WebSocket extends React.Component {
+export class WebSocket extends React.Component {
     ws = null;
     message="";
     constructor()
 {
     super();
+    this.tradesChannelId='';
      this.ws = new Sockette(WEB_SOCKET_ENDPOINT, {
         timeout: 5e3,
         maxAttempts: 10,
         onopen: e => {
-            debugger;
             console.log('Connected!', e);
             this.setupWebSocket();
             },
         onmessage: e => {
-            debugger;
             console.log('Received:', e);
 
             if(e.data) {
-                this.setState({message: e.data});
+                let response = JSON.parse(e.data);
+                if(response.event=="subscribed")
+                {
+                    if(response.channel=="trades")
+                    {
+                        this.tradesChannelId = response.chanId;
+                    }
+                    if(response.channel == "book")
+                    {
+                        this.bookChannelId = response.chanId;
+                    }
+                }
+                else if(Array.isArray(response))
+                {
+                    if(response[0]===this.tradesChannelId)
+                    {
+                        debugger;
+                       // this.setState({tradesData:response});
+
+                        this.props.dispatch(ActionCreators.setTradeData(response));
+                    }
+                    if(response[0]=== this.bookChannelId)
+                    {
+                        this.props.dispatch(ActionCreators.setBookData(response));
+                      //  this.setState({bookData:response});
+                    }
+                }
             }
         },
         onreconnect: e => console.log('Reconnecting...', e),
@@ -51,11 +78,40 @@ export default class WebSocket extends React.Component {
     }
 
     render() {
-        return <div>
+        const contextValue = {
+            data: this.state,
+        };
+
+        const children = React.Children.map(this.props.children, (child, index) => {
+            return React.cloneElement(child, {
+                index,
+                isActive: index === this.state,
+            });
+        });
+       return(children);
+        /*
+        return <Provider value={contextValue}>
             {this.props.children}
-        </div>;
+        </Provider>
+        */
     }
 }
+
+
 WebSocket.defaultProps = {
     maxAttempts: 5,
 };
+
+
+function mapStateToProps(state) {
+    return {
+        websockets: state.websocketReducer,
+    };
+}
+
+function mapDispatchToProps(dispatch) {
+    return {  dispatch };
+}
+
+
+export default connect(mapStateToProps, mapDispatchToProps)(WebSocket);
