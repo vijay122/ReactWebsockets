@@ -5,6 +5,7 @@ const WEB_SOCKET_ENDPOINT ="wss://api.bitfinex.com/ws/2";
 
 export default class WebSocket extends React.Component {
     ws = null;
+    message="";
     constructor()
 {
     super();
@@ -12,10 +13,18 @@ export default class WebSocket extends React.Component {
         timeout: 5e3,
         maxAttempts: 10,
         onopen: e => {
+            debugger;
             console.log('Connected!', e);
             this.setupWebSocket();
             },
-        onmessage: e => console.log('Received:', e),
+        onmessage: e => {
+            debugger;
+            console.log('Received:', e);
+
+            if(e.data) {
+                this.setState({message: e.data});
+            }
+        },
         onreconnect: e => console.log('Reconnecting...', e),
         onmaximum: e => console.log('Stop Attempting!', e),
         onclose: e => console.log('Closed!', e),
@@ -27,12 +36,24 @@ export default class WebSocket extends React.Component {
         this.setupWebSocket();
     }
       setupWebSocket = () => {
-          this.ws.send('Hello, world!');
-          this.ws.json({type: 'ping'});
+          this.tradeMessage = JSON.stringify({
+              event: 'subscribe',
+              channel: 'trades',
+              symbol: 'tBTCUSD'
+          });
+          this.bookMessage = JSON.stringify({
+              event: 'subscribe',
+              channel: 'book',
+              symbol: 'tBTCUSD'
+          })
+          this.ws.send(this.tradeMessage);
+          this.ws.send(this.bookMessage);
     }
 
     render() {
-        return <span />;
+        return <div>
+            {this.props.children}
+        </div>;
     }
 }
 WebSocket.defaultProps = {
