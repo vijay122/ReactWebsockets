@@ -1,13 +1,16 @@
 import React, { Component } from 'react';
 import "./OrderBook.scss";
 
-const Row = ({id, title, priority, type, complete}) => (
+const Row = ({count, amount, total, price, price1,total1,amount1,count1}) => (
     <div className="row">
-        <div>{id}</div>
-        <div>{title}</div>
-        <div>{priority}</div>
-        <div>{type}</div>
-        <div>{complete}</div>
+        <div>{count}</div>
+        <div>{amount}</div>
+        <div>{total}</div>
+        <div>{price}</div>
+        <div>{price1}</div>
+        <div>{total1}</div>
+        <div>{amount1}</div>
+        <div>{count1}</div>
     </div>
 );
 
@@ -19,9 +22,18 @@ export default class OrderBook extends React.Component {
         super(props);
         this.state = {
             data: [
-                {id: 403, title: 'Task 403', priority: 'High', type: 'Improvement', complete: 100},
-                {id: 532, title: 'Task 532', priority: 'Medium', type: 'Improvement', complete: 30},
-                {id: 240, title: 'Task 240', priority: 'High', type: 'Story', complete: 66},
+                {count : 43, amount: 1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 303, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 703, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 453, amount:  1.1222, total: 'High', price:  1.1222, price1: 140, total1:233, amount1:1, count1:1},
+                {count : 73, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 4037, amount:  1.1222, total: 'High', price:  1.1222, price1: 110, total1:233, amount1:1, count1:1},
+                {count : 1033, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 463, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+                {count : 4037, amount:  1.1222, total: 'High', price:  1.1222, price1: 100, total1:233, amount1:1, count1:1},
+
+
+
             ],
         };
 
@@ -51,11 +63,14 @@ export default class OrderBook extends React.Component {
         return (
             <div className="table">
                 <div className="header">
-                    <div onClick={() => this.sortBy('id')} >ID</div>
-                    <div onClick={() => this.sortBy('title')}>Title</div>
-                    <div onClick={() => this.sortBy('priority')}>Priority</div>
-                    <div onClick={() => this.sortBy('type')}>Issue Type</div>
-                    <div onClick={() => this.sortBy('complete')}>% Complete</div>
+                    <div onClick={() => this.sortBy('count')} >count</div>
+                    <div onClick={() => this.sortBy('amount')}>Amount</div>
+                    <div onClick={() => this.sortBy('total')}>Total</div>
+                    <div onClick={() => this.sortBy('price')}>Price</div>
+                    <div onClick={() => this.sortBy('price1')}>Price</div>
+                    <div onClick={() => this.sortBy('total1')} >total</div>
+                    <div onClick={() => this.sortBy('amount1')}>Amount</div>
+                    <div onClick={() => this.sortBy('count1')}>count</div>
                 </div>
                 <div className="body">
                     {rows}
