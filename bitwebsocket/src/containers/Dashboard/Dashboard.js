@@ -4,7 +4,6 @@ import Websocket from "../../components/Websocket/Websocket";
 import React, { Component } from 'react';
 import OrderBook from "../OrderBook/OrderBook";
 import Trades from "../Trades/Trades";
-//import logo from './logo.svg';
 import './Dashboard.scss';
 import { Container, Row, Col } from 'react-grid-system';
 
@@ -33,18 +32,14 @@ export default class Dashboard extends Component {
                     <Container>
                         <Row>
                             <Col sm={8} className="border5 noSidePadding">
-
-                                <div>
-                                    <label>orderbook</label>
+                                <div className="headingClass">
+                                    <span className="textClass"> Orderbook</span>
                                 <OrderBook/>
                                 </div>
-
                             </Col>
                             <Col sm={4} className="border5 noSidePadding noLeftBorder">
                                 <div>
-
                                 <Trades/>
-
                                 </div>
                             </Col>
 

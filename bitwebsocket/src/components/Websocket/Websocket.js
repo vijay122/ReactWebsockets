@@ -1,7 +1,6 @@
-import React, { Component } from 'react';
+import React from 'react';
 import Sockette from 'sockette';
 const WEB_SOCKET_ENDPOINT ="wss://api.bitfinex.com/ws/2";
-const { Provider, Consumer } = React.createContext();
 import ActionCreators from "../../redux/actions";
 import { connect } from "react-redux";
 
@@ -11,6 +10,10 @@ export class WebSocket extends React.Component {
     constructor()
 {
     super();
+    this.state={
+        tradeSymbol:"tBTCUSD",
+        bookSymbol:"tBTCUSD",
+    }
     this.tradesChannelId='';
      this.ws = new Sockette(WEB_SOCKET_ENDPOINT, {
         timeout: 5e3,
@@ -30,6 +33,10 @@ export class WebSocket extends React.Component {
                     {
                         this.tradesChannelId = response.chanId;
                     }
+                    if(response.channel == "ticker")
+                    {
+                        this.tickerChannelId = response.chanId;
+                    }
                     if(response.channel == "book")
                     {
                         this.bookChannelId = response.chanId;
@@ -44,6 +51,11 @@ export class WebSocket extends React.Component {
                     if(response[0]=== this.bookChannelId)
                     {
                         this.props.dispatch(ActionCreators.setBookData(response));
+                    }
+                    if(response[0]==this.tickerChannelId && Array.isArray(response[1]))
+                    {
+                        //To send ticker data. Todo
+                   //     this.props.dispatch(ActionCreators.setBookData(response));
                     }
                 }
             }
@@ -61,20 +73,24 @@ export class WebSocket extends React.Component {
       setupWebSocket = () => {
           this.tradeMessage = JSON.stringify({
               event: 'subscribe',
-              channel: 'trades',
-              symbol: 'tBTCUSD'
+              channel: 'trade',
+              symbol: this.state.tradeSymbol
+          });
+          this.tickerMessage = JSON.stringify({
+              event: 'subscribe',
+              channel: 'ticker',
+              symbol: this.state.tradeSymbol
           });
           this.bookMessage = JSON.stringify({
-              event: 'subscribe',
-              channel: 'book',
-              symbol: 'tBTCUSD'
+              "event": "subscribe",
+              "channel": "book",
+              "symbol": "tBTCUSD"
           })
-          this.ws.send(this.tradeMessage);
           this.ws.send(this.bookMessage);
+          this.ws.send(this.tickerMessage);
     }
     componentDidUpdate()
     {
-        debugger;
         if(this.state.toDisconnect==true)
         {
             this.ws.close();
@@ -82,10 +98,6 @@ export class WebSocket extends React.Component {
     }
 
     render() {
-        const contextValue = {
-            data: this.state,
-        };
-
         const children = React.Children.map(this.props.children, (child, index) => {
             return React.cloneElement(child, {
                 index,
@@ -93,19 +105,12 @@ export class WebSocket extends React.Component {
             });
         });
        return(children);
-        /*
-        return <Provider value={contextValue}>
-            {this.props.children}
-        </Provider>
-        */
     }
-    static getDerivedStateFromProps(newProps, prevState) { // - GDSFS
-        debugger;
-        if(newProps && newProps.websockets && newProps.websockets.toDisconnect===true)
-        {
-            return {
-                ...newProps.websockets
-            }
+
+    /*Identify state changes and only render if new change happens  GDSFS*/
+    static getDerivedStateFromProps(newProps, prevState) {
+        if(newProps && newProps.websockets && newProps.websockets.toDisconnect===true) {
+            return {...prevState, toDisconnect:true}
         }
         return null;
     }

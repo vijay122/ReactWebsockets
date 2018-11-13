@@ -1,6 +1,9 @@
 import {BookActionType} from "../actions/bookActions";
 
-const initialState = null;
+const initialState = {
+    reds:null,
+    greens:null,
+};
 
 const orderBookReducer = (state = initialState,action) => {
     let nextState = state;
@@ -8,20 +11,21 @@ const orderBookReducer = (state = initialState,action) => {
         case BookActionType.SET_BOOKS:
             const { data } = action.payload;
             let result;
-            if(data && data[1].length<4) {
-                 result = preprocessData(data[1]);
+            const copyState = _.cloneDeep(state);
+            if(data && data[1].length>3) {
+
+                result = preprocessBatchData(data[1],copyState);
             }
-            else if(data[1].length>4)
+            else if(data[1].length==3)
             {
-              //   result = preprocessBatchData(data[1]);
+                result = preprocessData(data[1],copyState);
             }
 
             let currentItems = state && state.currentItems ||[];
-            if(currentItems.length>100) {
-                currentItems = _.dropRight(currentItems,currentItems.length-100);
+            if(result) {
+                currentItems = result;
             }
-            currentItems.unshift(result);
-            nextState ={...state, currentItems};
+            nextState ={...state, ...currentItems};
             console.log(nextState);
             break;
         default:
@@ -31,26 +35,86 @@ const orderBookReducer = (state = initialState,action) => {
 };
 
 
-function preprocessBatchData(bookItems)
+function preprocessBatchData(arrBooks,state)
 {
-   let arra=  bookItems && bookItems.reduce && bookItems.reduce(function(result, item, index, array) {
-        result["count"] = item; //a, b, c
-        result["amount"] = item;
-        result["total"] = item;
-        result["price"] = item;
-        return result;
-    }, {})
-    return arra;
+    var op={reds:null,greens:null};
+    for(let i=0; i<arrBooks.length; i++)
+    {
+        op = preprocessData(arrBooks[i],op);
+    }
+    return op;
+}
+function preprocessData(bookItems,state)
+{
+    debugger;
+    var value ={
+        count:bookItems[1],
+        amount:bookItems[2],
+        price:bookItems[0],
+    }
+    var key = bookItems[0];
+    let {reds,greens} = state;
+    if(bookItems[2]>0)
+    {
+        if(greens== null)
+        {
+            greens  = new Map();
+            greens.set(key, value);
+        }
+        else
+        {
+            if(greens.has(key))
+            {
+                let oldValue = greens.get(key);
+                oldValue.count = oldValue.count + value.count;
+                oldValue.amount = oldValue.amount + value.amount;
+                greens.delete({key});
+                greens.set(key,value);
+            }
+            else
+            {
+                greens.set(key,value);
+            }
+        }
+    }
+    else
+    {
+        if(reds== null)
+        {
+            reds = new Map();
+            reds.set(key,value);
+        }
+        else {
+                if(reds.has(key))
+                {
+                    let oldValue = reds.get(key);
+                    oldValue.count = oldValue.count + value.count;
+                    oldValue.amount = oldValue.amount + value.amount;
+                    reds.delete(key);
+                    reds.set(key,value);
+                }
+                else
+                {
+                    reds.set(key,value);
+                }
+        }
+    }
+    //reds= sortMapByValue(reds);
+    //greens = sortMapByValue(greens);
+    return {reds,greens};
 }
 
-function preprocessData(bookItems)
-{
-    var result ={};
-        result["count"] =bookItems[1]<0? bookItems[1].toFixed(6):bookItems[1]; //a, b, c
-        result["amount"] =bookItems[2]<0? bookItems[2].toFixed(4):bookItems[2];
-        result["total"] =bookItems[1]<0? bookItems[1].toFixed(6):bookItems[1]; //a, b, c
-        result["price"] =bookItems[0]<0? bookItems[0].toFixed(6):bookItems[0];
-        return result;
+function sortMapByValue(map) {
+    var tupleArray = [];
+    for (var key in map) tupleArray.push([key, map[key]]);
+    tupleArray.sort(function (a, b) {
+        return b[1] - a[1]
+    });
+    var sortedMap = new Map();
+    tupleArray.forEach(function (el) {
+        sortedMap.set([el[0]],el[1]); // = el[1]
+    });
+    return sortedMap;
 }
 
 export default orderBookReducer;

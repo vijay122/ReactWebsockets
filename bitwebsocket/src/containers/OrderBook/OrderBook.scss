@@ -5,7 +5,7 @@
     display: flex;
     flex-direction: column;
     max-height: 700px;
-    overflow: scroll;
+    overflow: hidden;
     .header {
       position: sticky;
       top: 0px;
@@ -43,5 +43,11 @@
     }
     .extraWidth{
       min-width:150px;
+    }
+    .redText{
+      color:red;
+    }
+    .greenText{
+      color:greenyellow;
     }
   }
